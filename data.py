@@ -96,3 +96,130 @@ print(df.info())
 print('\n[describe] / 숫자 칼럼 요약')
 num_cols = ['나이', 'SBP(수축기)', 'DBP(이완기)', '심박수', '공복혈당','운동빈도(주)']
 print(df[num_cols].describe)
+
+
+# ============================
+# [3] 데이터 정제 및 변환
+# ============================
+
+print('===============================')
+print('[3] 데이터 정제 및 변환')
+print('===============================')
+
+# pd.to_datetime():
+print(df['측정일'].dtype) # 변환 전
+df['측정일'] = pd.to_datetime(df['측정일'])
+
+print(df['측정일'].dtype)
+
+# ============================
+# 3-2) 단위 제거:  
+# ============================
+
+# str.replace() : 문자열 치환(여기서는 단위 제거)
+
+print(df['키'].dtype)
+print(df['몸무게'].dtype)
+
+# df['키_cm'] = df['키'].str.replace('cm', '', regex=Flase).astype(int)
+df['뭄무게_kg'] = df['몸무게'].str.replace('cm', '', regex=Flase).astype(int)
+
+print(df['키_cm'].dtype)
+print(df['몸무게'].dtype)
+
+# ============================
+# 3-3) 결측치 확인:   
+# ============================
+
+print('3-3) 결측치 확인')
+print('[결측치 개수 확인]')
+print(df.isnull().sum())
+
+# ============================
+# 3-4) 결측치 처리(예시)   
+# ============================
+
+df['나이'] = df['나이'].fillna(df['나이'].mean())
+df['공복혈당'] = df['공복혈당'].fillna(df['공복혈당'].median())
+df['운동빈도(주)'] = df['운동빈도(주)'].fillna(0)
+
+print('[결측치 처리 후 개수 확인]')
+print(df.isnull().sum())
+
+# ============================
+# 3-5) 파생 컬럼 생성(변환)   
+# ============================
+
+# BMI = 몸무게(kg) / 키(m)^2
+print('== cm -> m 변환 ==')
+df['키_m'] = df['키_m'] / 100
+df['BMI'] = df['몸무게_kg'] / (df['키_m'] ** 2)
+
+print('== BMI ==')
+print(df[['키_cm', '키_m']].head())
+print(df['BMI'].head())
+
+print('== 맥박압(PP) ==')
+df['맥박압_pp'] = df['SBP(수축기)'] - df['DBP(이완기)']
+print(df['맥박압_PP'].head)
+
+print('== 평균동맥압(MAP) ==')
+
+df['평균동맥압_MAP'] = (df['SBP(수축기)'] + 2 * df['DBP(이완기)']) / 3
+print(df['평균동맥압_MAP'].head())
+
+# ============================
+# 3-6) 범주화(카테고리 만들기) : 혈압 단계 분류  
+# ============================
+
+
+def bp_category(sbp, dbp):
+    if(sbp >= 140) or (dbp >= 90):
+        return '고혈압2기'
+    elif(130 <= sbp <= 139) or (80 <= dbp <= 89):
+        return '고혈압1기'
+    elif(120 <= sbp <= 129) and (dbp < 80):
+        return '주위(상승)'
+    elif(sbp < 120) and (dbp < 80):
+        return '정상'
+    else:
+        return '기타'
+'''
+# 일반 함수
+def test(row):
+    return 'hi'
+
+# lambda : 이름 없이 간단하게 작성하는 함수(익명함수)
+# lambda 매개변수: 반환할_표현식
+lambda row: 'hi'
+'''
+
+# apply() : 행 단위로 함수를 적용할 때 자주 사용
+df['혈압분류'] = df.apply(lambda row: bp_category(
+    row['SBP(수축기)'],
+    row['DBP(이완기)']
+), axis=1
+)
+
+print('[혈압 분류 결과]')
+print(df[['SBP(수축기)', 'DBP(이완기)', '혈압분류']].head)
+
+# ============================
+# 3-7) 범주화 : BMI 단계 분류(간단 예시)  
+# ============================
+'''
+BMI 분류
+- 저체중 : < 18.5
+- 정상 : 18.5 ~ 22.9
+- 과체중 : 23.0 ~ 24.9
+- 비만 : 
+'''
+
+def bmi_category(bmi):
+    if bmi < 18.5:
+        return '저체중'
+    elif bmi < 22.9:
+        return '정상'
+    elif bmi < 24.9:
+        return '과체중'
+    else bmi <
