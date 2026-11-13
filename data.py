@@ -178,3 +178,70 @@ plt.yticks(range(len(corr_cols)), corr_cols, rotation=45)
 plt.title('Correlation Heatmap')
 plt.tight_layout()
 plt.show()
+
+print('==================================')
+print('-1) 혈압분류 비율')
+print('=====================================') 
+
+
+# =====================================
+# 6-1) 혈압분류 비율
+# =====================================
+
+plt.close('all')
+
+bp_count = df['혈압분류'].vlaue_count()
+bp_ratio = (bp_count)
+
+print('\n[혈압분류 분포(비율%)]')
+print(bp_ratio.round(1))
+
+# =====================================
+# 6-2) 위험 신호 : 공복혈당 평균과 126 이상 비율
+# =====================================
+mean_glu = df['공복혈당'].mean()
+high_glu_ratio = (df['공복혈당'] >= 126).mean() * 100
+
+print(f'\n[공복혈당 평균 : {mean_glu: .2f} mg/dL]')
+print(f'[공복혈당 126 이상 비율 : {high_glu_ratio: .1f}%]')
+
+# =====================================
+# 6-3) 운동빈도와 주요 지표 관계
+# =====================================
+
+corr_exercise_sbp = df['운동빈도(주)'].corr(df['SBP(수축기)'])
+corr_exercise_bmi = df['운동빈도(주)'].corr(df['BMI'])
+
+print(f'\n[운동빈도 vs SBP 상관계수] : {corr_exercise_sbp: .2f}')
+print(f'[운동빈도 vs BMI 상관계수] : {corr_exercise_sbp: .2f}')
+
+# =====================================
+# 6-4) 전략/제안 3줄
+# =====================================
+stratege = []
+
+ht2_ratio = (df['혈압분류'] == '고혈압2기').mean()
+
+if ht2_ratio >=30:
+    stratege.append('고혈압2기 비율이 높은 편이라, ' \ '생활습관(운동/체중/염분)관련 교육 및 추적 관리가 필요합니다')
+
+else:
+    stratege.append('고혈압2기 비율이 과도하게 높진 않지만,' \ '고혈압1기 이상에 대한 예방 안내가 유효합니다.')
+
+# BMI 비만 비율 코멘트
+obesity_ratio = (df['BMI분류'] == '비만').mean() * 100
+stratege.append(f'BMI 기준 비만 비율이 {obesity_ratio: .1f}%로 확인되어,
+                체중관리(식습관+운동) 프로그램을 고려할 수 있습니다.')
+
+if high_glu_ratio > 20:
+    stratege.append('공복혈당 126 이상 비율이 꽤 있어,' \
+                    '혈당 관련 추가 검사/상담 연계를 고려할 수 있습니다.')
+else:
+    stratege.append('공복혈당 고위험 비율이 높진 않지만,' \
+                    '식급관/활동량 관련 기본 가이드를 제공하면 좋습니다.')
+
+print('\n[제안 3줄]')
+for s in stratege:
+    print(f'- {s}')
+
+            
