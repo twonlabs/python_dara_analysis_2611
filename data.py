@@ -136,3 +136,45 @@ plt.xlabel('Blood Pressure Category')
 plt.ylabel('BMI')
 plt.tight_layout()
 plt.show()
+
+# =====================================
+# 5-7) 성별 BMI
+# =====================================
+
+plt.close('all')
+
+plt.figure()
+
+df[df['성별'] == 'M']['BMI'].hist(alpha=0.5, bins=8)
+df[df['성별'] == 'F']['BMI'].hist(alpha=0.5, bins=8)
+
+
+plt.title('BMI DIST by Gender')
+plt.xlabel('BMI')
+plt.ylabel('Frequency')
+plt.legend('Male', 'Female')
+plt.tight_layout()
+plt.show()
+
+# =====================================
+# 5-8) 상관관계 히트맵
+# =====================================
+'''
+히트맵
+- 값의 크기를 색으로 표현하는 그래프
+- 값이 클수록 진한 색
+- 값이 작을수록 연한 색
+'''
+
+corr_cols = ['나이', '키_cm', '몸무게_kg', 'SBP(수축기)', 'SBP(이완기)', '공복혈당', 'BMI']
+
+corr = df[corr_cols].corr()
+
+plt.figure()
+plt.imshow(corr)
+plt.colorbar()
+plt.xticks(range(len(corr_cols)), corr_cols, rotation=45)
+plt.yticks(range(len(corr_cols)), corr_cols, rotation=45)
+plt.title('Correlation Heatmap')
+plt.tight_layout()
+plt.show()
