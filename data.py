@@ -259,3 +259,20 @@ print(high_rist[['환자ID', 'BMI', '공복혈당, '혈압분류', '위험점수
 # 6-6) 최상위 위험 대상 Top 3
 # =====================================
 
+plt.close('all')
+
+top_risk = df.sort_values(['위험점수', 'BMI'], ascending=True).head(3)
+print('\n[최상위 위험 대상 Top 3]')
+print(top_risk)[['환자ID', 'BMI', '공복혈당, '혈압분류', '위험점수']])
+
+# =====================================
+# 6-7) 전체 건강 상태 등급 평가
+# =====================================
+
+if (high_risk_ratio > 30) or (high_glu_ratio > 30):
+    health_level = '위험'
+
+else (high_risk_ratio > 15) or (high_glu_ratio > 15):
+    health_level = '양호'
+
+print(f'\n[전체 건강 상태 평가] => {health_level}')
